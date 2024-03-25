@@ -31,6 +31,14 @@ public class Lab16_1 extends Application {
 
     HBox paneForRadioButtons = new HBox(20);
 
+    //Declare combo boxes
+    ComboBox<String> cboFontFamilies = new ComboBox<>();
+    ComboBox<Integer> cboFontSizes = new ComboBox<>();
+
+   HBox comboBoxPane = new HBox(30);
+   Label lblFontFamily;
+   Label lblFontSize;
+
     public void start(Stage stage) {
         BorderPane mainScreen = new BorderPane();
 
@@ -42,6 +50,11 @@ public class Lab16_1 extends Application {
 
         createRadioButtons();
 
+        createFontComboBox();
+
+        createFontSizeComboBox();
+
+        comboBoxPane.getChildren().addAll(lblFontFamily, lblFontSize);
         createListeners();
         rbBlack.setSelected(true);
 
@@ -52,12 +65,36 @@ public class Lab16_1 extends Application {
         mainScreen.setCenter(text);
         mainScreen.setBottom(paneForButtons);
         mainScreen.setRight(updateContainer);
+        mainScreen.setTop(comboBoxPane);
 
         //usual stuff
         Scene scene = new Scene(mainScreen, 700, 500);
         stage.setTitle("Select a Font");
         stage.setScene((scene));
         stage.show();
+    }
+
+    private void createFontSizeComboBox() {
+        cboFontSizes.getItems().addAll(getSizes());
+        cboFontSizes.setValue(38);
+        lblFontSize = new Label("Font Size: ", cboFontSizes);
+        lblFontSize.setContentDisplay(ContentDisplay.RIGHT);
+        comboBoxPane.getChildren().addAll(lblFontFamily, lblFontSize);
+    }
+
+    private void createFontComboBox() {
+        lblFontFamily = new Label("Font Name: ", cboFontFamilies);
+        cboFontFamilies.getItems().addAll(Font.getFamilies());
+        cboFontFamilies.setValue("Arial");
+        lblFontFamily.setContentDisplay(ContentDisplay.RIGHT);
+    }
+
+    private Integer[] getSizes() {
+        Integer[] sizes = new Integer[100];
+        for (int i = 0; i < sizes.length; i++) {
+            sizes[i] = i + 1;
+        }
+        return sizes;
     }
 
     private void createRadioButtons() {
@@ -96,6 +133,10 @@ public class Lab16_1 extends Application {
         rbBlue.setOnAction(e -> text.setFill(Color.BLUE));
         rbBlack.setOnAction(e -> text.setFill(Color.BLACK));
         rbOrange.setOnAction(e -> text.setFill(Color.ORANGE));
+
+        // listeners for each combo box
+cboFontFamilies.setOnAction(e -> update());
+cboFontSizes.setOnAction(e -> update());
     }
 
     private void update() {
@@ -108,7 +149,11 @@ public class Lab16_1 extends Application {
         FontPosture fontPosture = (chkItalic.isSelected()) ?
                 FontPosture.ITALIC : FontPosture.REGULAR;
 
-        text.setFont(Font.font("Arial", fontWeight, fontPosture, 28));
+
+        String fontFamily = cboFontFamilies.getValue();
+        double size = cboFontSizes.getValue();
+
+        text.setFont(Font.font(fontFamily, fontWeight, fontPosture, size));
     }
 
     private void createRightPane() {
